@@ -1,0 +1,168 @@
+\documentclass[aspectratio=169, 10pt]{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage{xcolor}
+\usepackage{array}
+
+% -----------------------------------------------------------------------------
+% Nerd Mode Dark Palette
+% -----------------------------------------------------------------------------
+\definecolor{nerdDark}{HTML}{0D1117}      % Background canvas
+\definecolor{nerdPanel}{HTML}{161B22}     % Card/Code block background
+\definecolor{nerdGreen}{HTML}{00FF66}     % Terminal Matrix Green
+\definecolor{nerdCyan}{HTML}{00F0FF}      % Electric Cyan
+\definecolor{nerdRed}{HTML}{FF0088}       % Electric Red (Dominic)
+\definecolor{nerdYellow}{HTML}{FFFF00}    % Plain Yello (Dominic)
+\definecolor{nerdPurple}{HTML}{BD93F9}    % Neon Purple
+\definecolor{nerdText}{HTML}{C9D1D9}      % High-contrast Off-White Text
+\definecolor{nerdDim}{HTML}{484F58}       % Dimmed Gray
+
+\setbeamercolor{background canvas}{bg=nerdDark}
+\setbeamercolor{normal text}{fg=nerdText}
+\setbeamercolor{title}{fg=nerdCyan}
+\setbeamercolor{author}{fg=nerdText}
+\setbeamercolor{date}{fg=nerdDim}
+\setbeamertemplate{navigation symbols}{}
+
+% -----------------------------------------------------------------------------
+% Metadata
+% -----------------------------------------------------------------------------
+\title{\textbf{SimHash: Schnelle Detektion von Plagiaten}}
+\author{Dominic van der Zypen}
+\date{}
+
+\begin{document}
+
+% =============================================================================
+% SLIDE 1: Title Slide
+% =============================================================================
+\begin{frame}
+  \titlepage
+  \vspace*{-3cm}
+  \begin{center}{2026-09-07}\end{center}
+\end{frame}
+
+% =============================================================================
+% SLIDE 2: Was ist ein Hash?
+% =============================================================================
+\begin{frame}[fragile]
+  \vspace{-0.2cm}
+  % Title Header
+  {\large \textcolor{nerdCyan}{\textbf{Was ist eine Hash-Funktion?}}}
+  
+  \vspace{0.15cm}
+
+  \begin{itemize}
+    \item Fixe Output-Bitl\"ange \textcolor{nerdGreen}{$n\in\mathbb{N}$}. 
+    \item Ein \textcolor{nerdGreen}{{\bf Hash}} ist eine 
+      Funktion $$h:\{0,1\}^*\to \{0,1\}^n.$$
+    \item Beispiele: 
+      \begin{enumerate}
+        \item Initialen bei Namen.
+        \item "Parity bit" + Verallgemeinerungen.
+      \end{enumerate}
+    \item Gew\"unschte Eigenschaft: \textcolor{nerdRed}{{\bf Avalanche effect}},
+      d.h. kleine \"Anderungen im Input geben grosse \"Anderungen
+      im Output.
+  \end{itemize}
+  
+\end{frame}
+
+% =============================================================================
+% SLIDE 3: SimHash Demo Slide
+% =============================================================================
+\begin{frame}[fragile]
+  \vspace{-0.2cm}
+  % Title Header
+  {\large \textcolor{nerdCyan}{\textbf{Beispiel f\"ur einen SimHash-Fingerprint}}}
+  
+  \vspace{0.15cm}
+  
+  \small
+  \textcolor{nerdText}{\textbf{Input:}} \texttt{"Hallo Welt!"} \quad$\vert$\quad 
+  \textcolor{nerdText}{\textbf{Anzahl Zeichen:}} \texttt{11} \quad$\vert$\quad 
+  \textcolor{nerdText}{\textbf{Anzahl Trigramme:}} \texttt{9} \quad$\vert$\quad 
+  \textcolor{nerdText}{\textbf{Mehrheit:}} $\ge \textcolor{nerdCyan}{5}$
+
+  \vspace{0.25cm}
+  
+  % Table Container Panel
+  \begin{center}
+  \colorbox{nerdPanel}{%
+  \ttfamily\small
+  \begin{tabular}{l l l}
+    \textcolor{nerdCyan}{\textbf{Trigramm}} & \textcolor{nerdCyan}{\textbf{32-bit-Hash (bin\"ar)}} & \textcolor{nerdCyan}{\textbf{Hexadezimal}} \\
+    \hline
+    "Hal" & \textcolor{nerdText}{1010 1001 0111 0101 0000 1111 1001 0110} & \textcolor{nerdPurple}{0xa9750f96} \\
+    "all" & \textcolor{nerdText}{1010 1001 0000 1010 1100 1111 1000 0011} & \textcolor{nerdPurple}{0xa90acf83} \\
+    "llo" & \textcolor{nerdText}{0011 0111 1110 0010 1101 1000 0100 0001} & \textcolor{nerdPurple}{0x37e2d841} \\
+    "lo " & \textcolor{nerdText}{1100 1111 1111 0001 0011 1101 1110 0111} & \textcolor{nerdPurple}{0xcff13de7} \\
+    "o W" & \textcolor{nerdText}{1100 1101 0011 1011 0111 0100 0101 1111} & \textcolor{nerdPurple}{0xcd3b745f} \\
+    " We" & \textcolor{nerdText}{1011 0010 0001 0011 0010 1010 1010 0011} & \textcolor{nerdPurple}{0xb2132aa3} \\
+    "Wel" & \textcolor{nerdText}{0000 1101 0001 1111 1101 0000 0111 1010} & \textcolor{nerdPurple}{0x0d1fd07a} \\
+    "elt" & \textcolor{nerdText}{1111 1001 1010 1111 1010 0011 0001 1011} & \textcolor{nerdPurple}{0xf9afa31b} \\
+    "lt!" & \textcolor{nerdText}{1001 0101 0100 0101 0110 1110 1110 1111} & \textcolor{nerdPurple}{0x95456eef} \\
+    \hline
+    \textcolor{nerdCyan}{\textbf{1-Count}} & \textcolor{nerdText}{[7, 8, 4, 4, 4, 4, 5, 5, 4, 5, 5, 6, 4, 5, 5, 4, \dots]} & \\
+    \hline\hline
+    \textcolor{nerdGreen}{\textbf{Fingerprint}} & \textcolor{nerdGreen}{\textbf{1010 1101 0011 0011 0110 1110 1100 0011}} & \textcolor{nerdGreen}{\textbf{0xad336ec3}} \\
+  \end{tabular}%
+  }
+  \end{center}
+
+  \vspace{0.1cm}
+  \footnotesize
+  \textcolor{nerdText}{\textbf{Regel:}} F\"ur jede Bit-Position $j$ gibt es eine "Abstimmung": Der Fingerprint ist 
+  \textcolor{nerdGreen}{\texttt{1}}, falls $\text{voting\_vector}[j] \ge 5$, \\
+  und \textcolor{nerdText}{\texttt{0}} sonst.
+\end{frame}
+
+% =============================================================================
+% SLIDE 4: \"Ahnlichkeitsvergleich via Hamming-Distanz
+% =============================================================================
+\begin{frame}[fragile]
+  \vspace{-0.2cm}
+  % Title Header
+  {\large \textcolor{nerdCyan}{\textbf{\"Ahnlichkeitsvergleich via Hamming-Distanz}}}
+  
+  \vspace{0.15cm}
+
+  \begin{itemize}
+    \item Die \textcolor{nerdGreen}{\textbf{Hamming-Distanz}} $d_H(x, y)$ 
+	    z\"ahlt die Anzahl abweichender Bits:
+      $$d_H(x, y) = \text{popcount}(x \oplus y)$$
+    \item Kein Avalanche effect bei SimHash:\\
+      \textcolor{nerdGreen}{\textbf{\"Ahnliche Dokumente $\Rightarrow$ kleine Hamming-Distanz.}}
+  \end{itemize}
+
+  \vspace{0.2cm}
+
+  % Comparison Table Container
+  \begin{center}
+  \colorbox{nerdPanel}{%
+  \ttfamily\small
+  \begin{tabular}{l l l}
+    \textcolor{nerdCyan}{\textbf{Dokument}} & \textcolor{nerdCyan}{\textbf{SimHash Fingerprint (32-Bit)}} & \textcolor{nerdCyan}{\textbf{Hex}} \\
+    \hline
+    \textcolor{nerdText}{Text A ("Hallo Welt!")} & 
+	  \texttt{1010 1101 0011 0011 0110 1110 
+	  1100 0011} & \textcolor{nerdPurple}{0xad336ec3} \\
+    \textcolor{nerdText}{Text B ("Hallo Welt.")} & 
+	  \texttt{1010 1101 0011 0011 0110 1110 
+	  110\textcolor{nerdRed}{1} 00\textcolor{nerdRed}{0}1} & 
+	  \textcolor{nerdPurple}{0xad336ed1} \\
+    \hline
+    \textcolor{nerdGreen}{\textbf{Bit-Vergleich}} & 
+	  \texttt{\textcolor{nerdGreen}{0000 0000 0000 0000 0000 0000 
+	  000\textcolor{nerdRed}{1} 
+	  00\textcolor{nerdRed}{1}0}} & 
+	  \textcolor{nerdYellow}{\textbf{2 Bits Diff}} \\
+  \end{tabular}%
+  }
+  \end{center}
+
+  \vspace{0.15cm}
+  \footnotesize
+  \textcolor{nerdText}{\textbf{Fazit:}} Da $d_H(A, B) = \textcolor{nerdGreen}{\mathbf{2}} \le k$ (typischer Schwellenwert $k \approx 3$), werden die Dokumente als \textcolor{nerdGreen}{\textbf{\"ahnlich / Plagiat}} eingestuft.
+\end{frame}
+
+\end{document}
