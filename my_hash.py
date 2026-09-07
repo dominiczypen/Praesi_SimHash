@@ -1,6 +1,7 @@
 # Author: Dominic van der Zypen
 # Last modified: 2026-09-07
 # Goal: provide a simple 32-bit hash function
+# Use: python my_hash.py "<string>"
 # ------------------------------
 import sys;
 # ------------------------------
